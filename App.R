@@ -5,6 +5,9 @@ library(shiny)
 
 source("Correction_Calculator.R")
 
+
+INPUTS <- c("area", "mass")
+
 ui <- fluidPage(
   titlePanel("HomeRange Correction"),
   
@@ -15,9 +18,9 @@ ui <- fluidPage(
       
       width = 5,
       
-      numericInput("area","Home range (area)", NULL, min = 0, max = Inf),
+      numericInput("area","Home range (area)", 0, min = 0, max = Inf),
       
-      numericInput("mass","Mass (kg)", NULL, min = 0, max = Inf),
+      numericInput("mass","Mass (kg)", 0, min = 0, max = Inf),
       
       selectInput("Estimator", 
                   label = "Original estimator (Not currently functional)",
@@ -32,7 +35,7 @@ ui <- fluidPage(
     ),
     
     mainPanel(width = 6,
-              headerPanel("Corrected area"),
+              #headerPanel("Corrected area"),
               
               tableOutput("results")
               
@@ -43,21 +46,65 @@ ui <- fluidPage(
 
 
 
-server <- function(input, output){
-  
-  output$results <- renderTable(HR_Correction(Area =0, Mass = 0))
+server <- function(input, output, session){
   
   
   
-  observeEvent( input$calculate,{
-    output$results <- renderTable(HR_Correction(Area = input$area, Mass = input$mass))
+  #output$results <- renderTable(HR_Correction(Area =0, Mass = 0))
+  
+  
+  #create a data frame of the results
+  compileResults <- function(data) {
+    data <- as.data.frame(t(data))
+    if (exists("RESULTS")) {
+      RESULTS <<- rbind(RESULTS, data)
+    } else {
+      RESULTS <<- data
+    }
   }
   
+  
+  # Whenever a field is filled, aggregate all form data
+  #formData is a reactive function
+  inputData <- reactive({
+    data <- sapply(INPUTS, function(x) input[[x]])
+    data
+  })
+  
+  # When the Save button is clicked, save the form data
+  observeEvent(input$calculate, {
+    compileResults(inputData())
+  })
+  
+  #Function for displaying the results if the exists
+  #Or a blank table if nothing has been calculated
+  displayResults <- function() {
+    if (exists("RESULTS")) {
+      RESULTS
+    } else {
+      
+      HR_Correction(Area =0, Mass = 0)
+    }
+  }
+  
+  
+
+  #When the user hits `calculate', generate the new correction
+  observeEvent(input$calculate,{
+    output$results <- renderTable(HR_Correction(Area = isolate(input$area),
+                                                Mass = isolate(input$mass)))
+  }
   )
   
+
+  #update the table of results with the current correction when `calculate' is clicked
+  output$results <- renderTable({
+    input$calculate
+    displayResults()
+  })
+
   
   
-  #output$results <- renderTable({RES})
 }
 
 

@@ -28,10 +28,10 @@ HR_Correction <- function(Area = NULL, Mass = NULL){
     Corrected_Area
   } else{
   #Apply the correction factor to the area estimate
-  Corrected_Area <- round(c(Area/Min_CF, Area/ML_CF, Area/Max_CF), 3)
+  Corrected_Area <- c(Area, Mass, round(c(Area/Min_CF, Area/ML_CF, Area/Max_CF), 3))
   
   
-  names(Corrected_Area) <- c("Min", "ML", "Max")
+  names(Corrected_Area) <- c("Original Area", "Mass (kg)", "Corrected Area - Min", "Corrected Area - ML", "Corrected Area - Max")
   Corrected_Area <- t(as.data.frame(Corrected_Area))
   
   row.names(Corrected_Area) <- "Corrected area"
