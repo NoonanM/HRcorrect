@@ -23,7 +23,8 @@ HR_Correction <- function(Area = NULL, Mass = NULL){
     names(Corrected_Area) <- c("Min", "ML", "Max")
     Corrected_Area <- t(as.data.frame(Corrected_Area))
     
-    row.names(Corrected_Area) <- "Mass specific correction factor"
+    #row.names(Corrected_Area) <- "Mass specific correction factor"
+    row.names(Corrected_Area) <- NULL
     
     Corrected_Area
   } else{
@@ -34,7 +35,8 @@ HR_Correction <- function(Area = NULL, Mass = NULL){
   names(Corrected_Area) <- c("Original Area", "Mass (kg)", "Corrected Area - Min", "Corrected Area - ML", "Corrected Area - Max")
   Corrected_Area <- t(as.data.frame(Corrected_Area))
   
-  row.names(Corrected_Area) <- "Corrected area"
+  #row.names(Corrected_Area) <- "Corrected area"
+  row.names(Corrected_Area) <- NULL
   
   Corrected_Area
 }
