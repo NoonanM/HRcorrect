@@ -86,9 +86,13 @@ ui <- dashboardPage(skin = "green",
                         HTML(paste("This application corrects 95% home range area estimates
                                    for the mass-specific bias in conventional estimators.",
                           
-                          "The correction is based on the regressional analyses in
-                          Noonan et al. (2019) Body size dependent underestimation of home range areas. In prep.",
-                        sep = "<br/> <br/>")
+                                   "The correction is based on the regressional analyses in
+                                   Noonan et al. (2019) Body size dependent underestimation of home range areas. In prep.",
+                        
+                                   "This correction is not a substitute for using a more rigorous home range estimator (e.g. autocorrelated-KDE),
+                                   and should only be used for cases where the underlying tracking data are not accessible.",
+                                   
+                                   sep = "<br/> <br/>")
                         )
                       ),
 
@@ -144,9 +148,6 @@ server <- function(input, output, session){
 
   # When the Clear All button is clicked, remove the results object
   observeEvent(input$clear, {
-
-    #RESULTS <
-    #RESULTS <<- HR_Correction(Area = 0, Mass = 0)
 
     RESULTS <<- NULL
     
