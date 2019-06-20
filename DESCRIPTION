@@ -1,6 +1,6 @@
-Package: HomeRangeCorrection
+Package: HRcorrect
 Type: Package
-Title: HomeRangeCorrection
+Title: HRcorrect
 Version: 0.0.1
 Author: Michael J. Noonan
 Maintainer: Michael J. Noonan <NoonanM@si.edu>

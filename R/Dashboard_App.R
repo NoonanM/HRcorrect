@@ -1,130 +1,148 @@
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-
+## app.R ##
 library(shiny)
+library(shinydashboard)
 
-source("Correction_Calculator.R")
+ui <- dashboardPage(skin = "green",
 
-app <- function(){
-ui <- fluidPage(
-  titlePanel("HRcorrect"),
-  
-  sidebarLayout(
-    sidebarPanel(
-      
-      helpText("Calculate a mass specific correction for a home range area estimated from a conventional estimator."),
-      
-      width = 5,
-      
+  #titlePanel("HomeRange Correction"),
+
+
+  #dashboardHeader(width = 10, title = "HomeRange Correction"),
+  dashboardHeader(title = "HomeRangeCorrection"),
+
+  dashboardSidebar(width = 350,
+
+    sidebarMenu(
+
+      #Input the HR area to be corrected
       numericInput("area","Home range (area)", 0, min = 0, max = Inf),
-      
+
+      #Input the mass to correct at
       numericInput("mass","Mass (kg)", 0, min = 0, max = Inf),
-      
-      selectInput("Estimator", 
+
+      #Input the original estimator (NOT FUNCTIONAL, NEED TO RUN THE FULL REGRESSIONS FIRST)
+      selectInput("Estimator",
                   label = "Original estimator (Not currently functional)",
-                  choices = c("KDE - Gaussian reference function", 
+                  choices = c("KDE - Gaussian reference function",
                               "KDE - Silverman's rule of thumb",
-                              "KDE - Least Squares Cross-Validation", 
+                              "KDE - Least Squares Cross-Validation",
                               "MCP"),
                   selected = "KDE - Gaussian reference function"),
-      
-      actionButton("calculate", "Calculate"),
-      
-      downloadButton("downloadData", "Save results")
-      
+
+      actionButton("calculate", "Calculate", style = "margin-top: 10%;")
     ),
-    
-    mainPanel(width = 7,
-              #headerPanel("Corrected area"),
-              
-              tableOutput("results")
-              
+
+
+    sidebarMenu(
+
+      actionButton("clear", "Clear all",
+                   style =
+                     "color:orange;background-color: #232d33;border: transparent;margin-left: 4%; margin-top: 20%")
+
+    ),
+
+    sidebarMenu(
+
+      #tags$style(type="text/css", "#downloadData {background-color:black;color: cyan; font-family: Courier New}"),
+
+
+
+      downloadButton("downloadData", "Save results",
+                     style =
+                       "color: #02c1ef;background-color: #232d33;border: transparent;margin-left: 4%; margin-top: 1%")
+
+               )
+    ),
+
+  dashboardBody(
+
+    fluidPage(
+
+      box(width = 6000, tableOutput("results")
+
+          )#Close the box
     )
+
   )
-  
-)#Closes the ui
-
-
+)
 
 server <- function(input, output, session){
 
-  
+
   #A function that creates a data frame of the results
   compileResults <- function(data) {
-    
+
     #Coerce to a dataframe
     data <- as.data.frame(data)
-    
+
     #Ask if there are already results
     if (exists("RESULTS")) {
       RESULTS <<- rbind(RESULTS, data)
-      
+
       rownames(RESULTS) <- 1:nrow(RESULTS)
     } else {
       RESULTS <<- data
-      
+
       rownames(RESULTS) <- 1:nrow(RESULTS)
     }
   }
-  
-  
+
+
   #Whenever some of the inputs are edited, calculate a new correction
   #NB: correctEstimate is a reactive function
   correctEstimate <- reactive({
-    
+
     correction <- HR_Correction(Area = input$area,
-                                         Mass = input$mass)
+                                Mass = input$mass)
     correction
   })
-  
-  
-  
+
+
+
   # When the calculate button is clicked, compile the results
   observeEvent(input$calculate, {
     compileResults(correctEstimate())
   })
-  
-  
+
+
+  # When the Clear All button is clicked, remove the results object
+  observeEvent(input$clear, {
+
+    #RESULTS <
+    RESULTS <<- HR_Correction(Area =0, Mass = 0)
+
+    output$results <- renderTable({
+      input$calculate
+      displayResults()
+
+    }, rownames = TRUE)
+
+  })
+
+
   #Function for displaying the results if they exist
   #Or a blank table if nothing has been calculated
   displayResults <- function() {
     if (exists("RESULTS")) {
       RESULTS
     } else {
-      
+
       HR_Correction(Area =0, Mass = 0)
     }
   }
-  
-  
 
-  #When the user hits `calculate', generate the new correction
-  #observeEvent(input$calculate,{
-  #  output$results <- renderTable(HR_Correction(Area = isolate(input$area),
-  #                                              Mass = isolate(input$mass)))
-  #}
-  #)
-  
-  
-  #observeEvent(input$calculate,{
-  #  RESULTS <- renderTable(HR_Correction(Area = isolate(input$area),
-  #                                              Mass = isolate(input$mass)))
-  #}
-  #)
-  
-  
-  #output$RES <- renderPrint({RESULTS})
+
 
   #update the table of results with the current correction when `calculate' is clicked
   output$results <- renderTable({
     input$calculate
     displayResults()
-    
+
   }, rownames = TRUE)
 
-  
-  
-  
+
+
+
   # Downloadable csv of corrected areas ----
   output$downloadData <- downloadHandler(
     filename = function() {
@@ -134,10 +152,8 @@ server <- function(input, output, session){
       write.csv(displayResults(), file, row.names = FALSE)
     }
   )
-  
-  
-}
 
 
-shinyApp(ui = ui, server = server)
 }
+
+shinyApp(ui, server)
