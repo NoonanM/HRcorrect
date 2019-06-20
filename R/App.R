@@ -104,7 +104,7 @@ ui <- dashboardPage(skin = "green",
 )
 
 server <- function(input, output, session){
-
+  
 
   #A function that creates a data frame of the results
   compileResults <- function(data) {
@@ -146,8 +146,10 @@ server <- function(input, output, session){
   observeEvent(input$clear, {
 
     #RESULTS <
-    RESULTS <<- HR_Correction(Area = 0, Mass = 0)
+    #RESULTS <<- HR_Correction(Area = 0, Mass = 0)
 
+    RESULTS <<- NULL
+    
     output$results <- renderTable({
       input$calculate
       displayResults()
