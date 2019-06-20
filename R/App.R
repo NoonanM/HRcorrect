@@ -4,23 +4,26 @@ library(shinydashboard)
 
 
 correct <- function() {
+  
+#First put together the dashboard based user interface
 ui <- dashboardPage(skin = "green",
+                    
+                    #Define the header
+                    dashboardHeader(title = "HRcorrect"),
 
-                    #titlePanel("HomeRange Correction"),
+                    #Define the sidebar
+                    dashboardSidebar(width = 330,
 
-
-                    #dashboardHeader(width = 10, title = "HomeRange Correction"),
-                    dashboardHeader(title = "HomeRangeCorrection"),
-
-                    dashboardSidebar(width = 350,
-
+                                     #Add elements to the sidebar
                                      sidebarMenu(
 
                                        #Input the HR area to be corrected
-                                       numericInput("area","Home range (area)", 0, min = 0, max = Inf),
+                                       numericInput("area","Home range (area)",
+                                                    NULL, min = 0, max = Inf),
 
                                        #Input the mass to correct at
-                                       numericInput("mass","Mass (kg)", 0, min = 0, max = Inf),
+                                       numericInput("mass","Mass (kg)",
+                                                    NULL, min = 0, max = Inf),
 
                                        #Input the original estimator (NOT FUNCTIONAL, NEED TO RUN THE FULL REGRESSIONS FIRST)
                                        selectInput("Estimator",
@@ -31,39 +34,71 @@ ui <- dashboardPage(skin = "green",
                                                                "MCP"),
                                                    selected = "KDE - Gaussian reference function"),
 
-                                       actionButton("calculate", "Calculate", style = "margin-top: 10%;")
+                                       
+                                       #An acton button to generate the calculations
+                                       actionButton("calculate",
+                                                    "Calculate",
+                                                    style = "margin-top: 12%")
+                                                    #style =
+                                                    #  "color: yellow; fsize: 40;
+                                                    #  background-color: #232d33;
+                                                    #  border: transparent;
+                                                    #  margin-left: 2%;
+                                                    #  margin-top: 10%")
                                      ),
 
-
+                                     #Add a separate sidebar (makes the button layout cleaner)
                                      sidebarMenu(
 
+                                       #Add an action button for clearing any previous corrections
                                        actionButton("clear", "Clear all",
                                                     style =
-                                                      "color:orange;background-color: #232d33;border: transparent;margin-left: 2%; margin-top: 20%")
-
+                                                      "color: orange;
+                                                      background-color: #232d33;
+                                                      border: transparent;
+                                                      margin-left: 2%;
+                                                      margin-top: 40%")
+                                       
                                      ),
 
                                      sidebarMenu(
-
-                                       #tags$style(type="text/css", "#downloadData {background-color:black;color: cyan; font-family: Courier New}"),
-
-
-
+                                       #Add a button for saving any calculated corrections as a .csv
                                        downloadButton("downloadData", "Save results",
                                                       style =
-                                                        "color: #02c1ef;background-color: #232d33;border: transparent;margin-left: 2%; margin-top: 1%")
-
+                                                        "color: #02c1ef;
+                                                        background-color: #232d33;
+                                                        border: transparent;
+                                                        margin-left: 2%;
+                                                        margin-top: 1%")
+                                       
                                      )
                     ),
 
-                    dashboardBody(
+                    dashboardBody(background = "grey",
 
-                      fluidPage(
+                      #fluidRow(
+                      
+                      box(title = "Application description",
+                          width = 6000,
+                          solidHeader = TRUE,
+                          status = "info",
+                        #background = "light-blue",
+                        HTML(paste("This application corrects 95% home range area estimates
+                                   for the mass-specific bias in conventional estimators.",
+                          
+                          "The correction is based on the regressional analyses in
+                          Noonan et al. (2019) Body size dependent underestimation of home range areas. In prep.",
+                        sep = "<br/> <br/>")
+                        )
+                      ),
 
-                        box(width = 6000, tableOutput("results")
+                        box(title = "Corrected area estimates",
+                            solidHeader = TRUE,
+                            status = "primary",
+                            width = 6000, tableOutput("results")
 
                         )#Close the box
-                      )
+                      #)
 
                     )
 )
@@ -111,7 +146,7 @@ server <- function(input, output, session){
   observeEvent(input$clear, {
 
     #RESULTS <
-    RESULTS <<- HR_Correction(Area =0, Mass = 0)
+    RESULTS <<- HR_Correction(Area = 0, Mass = 0)
 
     output$results <- renderTable({
       input$calculate
@@ -129,7 +164,7 @@ server <- function(input, output, session){
       RESULTS
     } else {
 
-      HR_Correction(Area =0, Mass = 0)
+      HR_Correction(Area = 0, Mass = 0)
     }
   }
 
@@ -155,8 +190,9 @@ server <- function(input, output, session){
     }
   )
 
+  
 
-}
+} #Closes the server function
 
 shinyApp(ui, server)
 
