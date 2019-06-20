@@ -84,7 +84,7 @@ ui <- dashboardPage(skin = "green",
                           status = "info",
                         #background = "light-blue",
                         HTML(paste("This application corrects 95% home range area estimates
-                                   for the mass-specific bias in conventional estimators.",
+                                   for the autocorrelation induced mass-specific bias in conventional estimators.",
                           
                                    "The correction is based on the regressional analyses in
                                    Noonan et al. (2019) Body size dependent underestimation of home range areas. In prep.",
