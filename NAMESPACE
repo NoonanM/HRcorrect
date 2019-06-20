@@ -1,0 +1,10 @@
+exportPattern("^[[:alpha:]]+")
+
+#Export the app function
+export(correct)
+
+#Import the shiny functions
+import(shiny)
+
+#Import the shinydashboard functionality
+import(shinydashboard)
