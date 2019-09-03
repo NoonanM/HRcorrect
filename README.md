@@ -6,7 +6,11 @@ The correction is based on the regressional analyses in Noonan et al. (2019) Bod
 
 This correction is not a substitute for using a more rigorous home range estimator (e.g. autocorrelated-KDE), and should only be used for cases where the underlying tracking data are not accessible.
 
-To install and run the app run the following lines in R:
+The app can be used online at:
+
+https://hrcorrect.shinyapps.io/HRcorrect/
+
+Or locally, via an R installation. To install and run the app run the following lines in R:
 
 ```{r, echo=FALSE, message=FALSE, warning = FALSE}
 
