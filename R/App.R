@@ -26,13 +26,13 @@ ui <- dashboardPage(skin = "green",
                                                     NULL, min = 0, max = Inf),
 
                                        #Input the original estimator (NOT FUNCTIONAL, NEED TO RUN THE FULL REGRESSIONS FIRST)
-                                       selectInput("Estimator",
-                                                   label = "Original estimator (Not currently functional)",
-                                                   choices = c("KDE - Gaussian reference function",
-                                                               "KDE - Silverman's rule of thumb",
-                                                               "KDE - Least Squares Cross-Validation",
-                                                               "MCP"),
-                                                   selected = "KDE - Gaussian reference function"),
+                                       #selectInput("Estimator",
+                                      #             label = "Original estimator (Not currently functional)",
+                                      #             choices = c("KDE - Gaussian reference function",
+                                      #                         "KDE - Silverman's rule of thumb",
+                                      #                         "KDE - Least Squares Cross-Validation",
+                                      #                         "MCP"),
+                                      #             selected = "KDE - Gaussian reference function"),
 
                                        
                                        #An acton button to generate the calculations
@@ -83,7 +83,7 @@ ui <- dashboardPage(skin = "green",
                           solidHeader = TRUE,
                           status = "info",
                         #background = "light-blue",
-                        HTML(paste("This application corrects 95% home range area estimates
+                        HTML(paste("This application corrects 95% home range area estimates estimated using Gaussian reference function KDE
                                    for the autocorrelation induced mass-specific bias in conventional estimators.",
                           
                                    "The correction is based on the regressional analyses in
