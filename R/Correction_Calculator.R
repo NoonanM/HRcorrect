@@ -3,17 +3,40 @@ HR_Correction <- function(Area = NULL, Mass = NULL){
 
   #Area = 10
   #Mass = 10
-  #Formulae for calculating a mass specific correction factor +/- 95% Confidence intervals
-  ML_Correction_Factor <- function(x) {1/(1 + exp(0.3644301*(x - 3.693227)))}
-  Min_Correction_Factor <- function(x) {1/(1 + exp(0.1888994*(x - 7.1498172)))}
-  Max_Correction_Factor <- function(x) {1/(1 + exp(0.9177596*(x - 0.2366375)))}
+  #Formulae for calculating a mass specific correction factor +/- 95% Prediction Intervals
+  
+  #Load in the fitted model from the manuscript
+  load("Data/Bias_Model.Rda")
+  
 
-  #Calculate the mass specific correction factor
-  ML_CF <- ML_Correction_Factor(log10(Mass))
+  if(Mass != 0){
+  #Use the fitted model to calculate the mass specific correction factor
+  ML_CF <- predict(Exp_Mod, newdata = data.frame(Mass = log10(Mass)))
 
-  Max_CF <- Max_Correction_Factor(log10(Mass))
+  
+  ## Use the delta method to get CIs on the fit
+  fit <- predict(Exp_Mod)
+  
+  V <- vcov(Exp_Mod)
+  X <- model.matrix(~log10(Mass),data=data.frame(Mass = log10(Mass)))
+  se.fit <- sqrt(diag(X %*% V %*% t(X)))
+  
+  predframe <- data.frame(log10(Mass),
+                          bias.95=ML_CF,
+                          lwr=ML_CF-1.96*se.fit,
+                          upr=ML_CF+1.96*se.fit)
+  
+  
+  
+  Max_CF <- predframe$upr
 
-  Min_CF <- Min_Correction_Factor(log10(Mass))
+  Min_CF <- predframe$lwr
+  
+  } else {
+    ML_CF <- 0
+    Max_CF <- 0
+    Min_CF <- 0
+  }
 
   if(missing(Area)){
     
@@ -31,6 +54,8 @@ HR_Correction <- function(Area = NULL, Mass = NULL){
   #Apply the correction factor to the area estimate
   Corrected_Area <- c(Area, Mass, round(c(Area/Min_CF, Area/ML_CF, Area/Max_CF), 3))
   
+  #Reorder
+  Corrected_Area[3:5] <- Corrected_Area[3:5][order(Corrected_Area[3:5])]
   
   names(Corrected_Area) <- c("Original Area", "Mass (kg)", "Corrected Area - Min", "Corrected Area - ML", "Corrected Area - Max")
   Corrected_Area <- t(as.data.frame(Corrected_Area))
