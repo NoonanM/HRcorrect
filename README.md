@@ -26,8 +26,7 @@ if (length(install) > 0) {
 
 # After installing the dependencies,
 # install HRcorrect from the github repository
-devtools::install_github(repo = "NoonanM/HRcorrect",
-                         auth_token = )
+devtools::install_github(repo = "NoonanM/HRcorrect")
 
 
 # Finally, run the application
