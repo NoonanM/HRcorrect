@@ -18,7 +18,7 @@ Or locally, via an R installation. To install and run the app run the following 
 avail <- installed.packages()[, 1]
 
 # Make a list of the required packages
-needed <- c("shiny", "shinydeshboard", "devtools")
+needed <- c("shiny", "shinydashboard", "devtools")
 
 # Check which of these are missing
 install <- needed[!needed %in% avail]
